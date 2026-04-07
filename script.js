@@ -14,33 +14,19 @@ document.getElementById('year').textContent = new Date().getFullYear();
 const form = document.getElementById('waitlist-form');
 const success = document.getElementById('success');
 
-// Wired to Kit (ConvertKit) form: https://app.kit.com/forms/designers/9299281/edit
-// In Kit: add custom fields `platform`, `interest`, `note` to the form, then map them
-// to tags via Automations → "Subscribers added to a form" → "Add tag if field equals":
-//   platform == ios     -> tag platform_ios
-//   platform == android -> tag platform_android
-//   interest contains beta   -> tag interest_beta
-//   interest contains launch -> tag interest_launch
-const KIT_FORM_ID = '9299281';
-const KIT_ENDPOINT = `https://app.kit.com/forms/${KIT_FORM_ID}/subscriptions`;
-
+// Submits to a Cloudflare Pages Function (functions/api/subscribe.js) which
+// holds the Kit API key as a secret and applies fields + tags server-side.
 async function submitToProvider(payload) {
-  const body = new URLSearchParams();
-  body.append('email_address', payload.email);
-  if (payload.first_name) body.append('first_name', payload.first_name);
-  body.append('fields[platform]', payload.platform);
-  body.append('fields[interest]', payload.interest.join(','));
-  if (payload.note) body.append('fields[note]', payload.note);
-
-  // Kit's public subscriptions endpoint doesn't return CORS headers, so we use
-  // no-cors and trust that a non-throwing fetch means the POST landed.
-  await fetch(KIT_ENDPOINT, {
+  const res = await fetch('/api/subscribe', {
     method: 'POST',
-    mode: 'no-cors',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: body.toString(),
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
   });
-  return { ok: true };
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error || `HTTP ${res.status}`);
+  }
+  return res.json();
 }
 
 form.addEventListener('submit', async (e) => {
