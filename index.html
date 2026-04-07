@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#ff5a87" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#0b0b0f" media="(prefers-color-scheme: dark)" />
+  <title>It's a Date — Check the date before you make the date</title>
+  <meta name="description" content="A calendar-aware iPhone app that tells you if you're free, suggests better times if you're not, and lets you share the plan in a tap. Join the early access waitlist." />
+
+  <meta property="og:title" content="It's a Date" />
+  <meta property="og:description" content="Check the date before you make the date. Join the early access waitlist." />
+  <meta property="og:type" content="website" />
+  <meta name="twitter:card" content="summary_large_image" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+</head>
+<body>
+  <header class="nav">
+    <a class="brand" href="#top" aria-label="It's a Date">
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 32 32" width="28" height="28"><path d="M16 28s-11-7.2-11-15a6 6 0 0 1 11-3.4A6 6 0 0 1 27 13c0 7.8-11 15-11 15z" fill="currentColor"/></svg>
+      </span>
+      <span class="brand-name">It's a Date</span>
+    </a>
+    <nav class="nav-links">
+      <a href="#how">How it works</a>
+      <a href="#features">Features</a>
+      <a href="#faq">FAQ</a>
+      <a href="#waitlist" class="nav-cta">Join waitlist</a>
+    </nav>
+  </header>
+
+  <main id="top">
+    <!-- HERO -->
+    <section class="hero">
+      <div class="hero-inner">
+        <p class="eyebrow">iPhone · Early access</p>
+        <h1>Check the date<br/>before you make the date.</h1>
+        <p class="lede">
+          A calendar-aware iPhone app that tells you if you're free, suggests better times if you're not, and lets you share the plan in a tap.
+        </p>
+
+        <form id="waitlist-form" class="waitlist-form" novalidate>
+          <div class="row">
+            <label class="field">
+              <span>First name <em>(optional)</em></span>
+              <input type="text" name="first_name" autocomplete="given-name" />
+            </label>
+            <label class="field">
+              <span>Email</span>
+              <input type="email" name="email" required autocomplete="email" placeholder="you@example.com" />
+            </label>
+          </div>
+
+          <fieldset class="field segmented">
+            <legend>Platform</legend>
+            <div class="seg" role="radiogroup">
+              <label><input type="radio" name="platform" value="ios" required checked /><span>iPhone / iOS</span></label>
+              <label><input type="radio" name="platform" value="android" /><span>Android</span></label>
+            </div>
+          </fieldset>
+
+          <fieldset class="field segmented">
+            <legend>I'm interested in <em>(optional)</em></legend>
+            <div class="seg" role="group">
+              <label><input type="checkbox" name="interest" value="beta" checked /><span>Beta access</span></label>
+              <label><input type="checkbox" name="interest" value="launch" /><span>Launch updates</span></label>
+            </div>
+          </fieldset>
+
+          <label class="field">
+            <span>What would make this useful for you? <em>(optional)</em></span>
+            <textarea name="note" rows="2" placeholder="One line is fine."></textarea>
+          </label>
+
+          <button type="submit" class="btn primary">Join the waitlist</button>
+          <p class="privacy-note">No spam. Just beta and launch updates.</p>
+        </form>
+
+        <div class="success" id="success" hidden>
+          <div class="check">✓</div>
+          <h3>You're on the list.</h3>
+          <p>We'll let you know when It's a Date is ready.</p>
+        </div>
+      </div>
+
+      <aside class="hero-art" aria-hidden="true">
+        <div class="phone">
+          <div class="phone-screen">
+            <div class="screen-title">It's a Date</div>
+            <div class="screen-card">
+              <div class="dot"></div>
+              <div>
+                <div class="line strong">Friday · 7:30 PM</div>
+                <div class="line muted">1 hr · In person</div>
+              </div>
+            </div>
+            <div class="screen-success">
+              <div class="check small">✓</div>
+              <div class="line strong">It's a date.</div>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- HOW IT WORKS -->
+    <section id="how" class="section">
+      <h2>How it works</h2>
+      <ol class="steps">
+        <li>
+          <span class="step-num">1</span>
+          <h3>Pick a date and time</h3>
+          <p>Tap a day, choose how long. Or just say it out loud.</p>
+        </li>
+        <li>
+          <span class="step-num">2</span>
+          <h3>Check if you're free</h3>
+          <p>It reads your calendar locally. Nothing leaves your phone.</p>
+        </li>
+        <li>
+          <span class="step-num">3</span>
+          <h3>Share it or try a better option</h3>
+          <p>If you're busy, get smart alternatives. If you're free, share the plan.</p>
+        </li>
+      </ol>
+    </section>
+
+    <!-- FEATURES -->
+    <section id="features" class="section">
+      <h2>Built for fast plans</h2>
+      <div class="cards">
+        <div class="card"><div class="ico">📅</div><h3>Calendar-aware</h3><p>Reads your existing Apple calendars. No new accounts.</p></div>
+        <div class="card"><div class="ico">✨</div><h3>Smart alternatives</h3><p>Conflicting? Get nearby times that actually work.</p></div>
+        <div class="card"><div class="ico">📍</div><h3>Online or offline</h3><p>Add a venue or a link. Keep notes if you need them.</p></div>
+        <div class="card"><div class="ico">📤</div><h3>Easy sharing</h3><p>Send the plan via the iOS share sheet in one tap.</p></div>
+        <div class="card"><div class="ico">⚡</div><h3>Built for speed</h3><p>Most checks take three taps. That's the whole app.</p></div>
+        <div class="card"><div class="ico">🔒</div><h3>Private by design</h3><p>No backend, no tracking. Your calendar stays local.</p></div>
+      </div>
+    </section>
+
+    <!-- AUDIENCES -->
+    <section class="section split">
+      <div class="split-card">
+        <h3>iPhone first</h3>
+        <p>We're shipping iOS first. Join the early access waitlist and we'll invite you to TestFlight as soon as a build is ready.</p>
+        <a href="#waitlist" class="btn ghost">Get early access →</a>
+      </div>
+      <div class="split-card">
+        <h3>Android coming later</h3>
+        <p>Android isn't here yet, but you can join the launch list and we'll let you know the moment it lands.</p>
+        <a href="#waitlist" class="btn ghost">Notify me on Android →</a>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section id="faq" class="section">
+      <h2>FAQ</h2>
+      <div class="faq">
+        <details><summary>Is the app available yet?</summary><p>Not yet. iPhone is in private beta. Join the waitlist to get an invite.</p></details>
+        <details><summary>Will Android be supported?</summary><p>Eventually. We're focused on shipping iOS first. Join the Android list to be notified.</p></details>
+        <details><summary>Do I need to connect my calendar?</summary><p>Yes — checking availability is the whole point. The app uses Apple's EventKit and reads only locally.</p></details>
+        <details><summary>Will you spam me?</summary><p>No. You'll get one email when there's something to tell you, and that's it.</p></details>
+        <details><summary>How will beta access work?</summary><p>We'll send a TestFlight invite to the email you sign up with. One tap to install.</p></details>
+      </div>
+    </section>
+
+    <!-- FINAL CTA -->
+    <section id="waitlist" class="section final-cta">
+      <h2>Join the waitlist.</h2>
+      <p class="lede">Be first in line when It's a Date is ready.</p>
+      <a href="#top" class="btn primary big">Sign up at the top ↑</a>
+      <p class="privacy-note">No spam. Just beta and launch updates.</p>
+    </section>
+  </main>
+
+  <footer>
+    <p>© <span id="year"></span> It's a Date · <a href="#">Privacy</a></p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
