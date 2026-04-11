@@ -1,18 +1,21 @@
 // Year
 document.getElementById('year').textContent = new Date().getFullYear();
 
-// Form submit (dummy handler).
-// To wire up Kit / Mailchimp later: replace `submitToProvider` with a fetch
-// to your provider endpoint. Field name -> tag mapping:
+// Mailing-list form submit.
+// The Cloudflare Pages Function stores subscribers in Kit and tags by platform:
 //   first_name -> merge field FNAME
 //   email      -> merge field EMAIL
 //   platform=ios     -> tag platform_ios
 //   platform=android -> tag platform_android
-//   interest=beta    -> tag interest_beta
-//   interest=launch  -> tag interest_launch
 //   note             -> custom field NOTE
-const form = document.getElementById('waitlist-form');
+const form = document.getElementById('updates-form');
 const success = document.getElementById('success');
+const formMessage = document.getElementById('form-message');
+
+function setFormMessage(message) {
+  formMessage.hidden = !message;
+  formMessage.textContent = message || '';
+}
 
 // Submits to a Cloudflare Pages Function (functions/api/subscribe.js) which
 // holds the Kit API key as a secret and applies fields + tags server-side.
@@ -36,20 +39,21 @@ form.addEventListener('submit', async (e) => {
     first_name: (fd.get('first_name') || '').toString().trim(),
     email: (fd.get('email') || '').toString().trim(),
     platform: (fd.get('platform') || '').toString(),
-    interest: fd.getAll('interest').map(String),
     note: (fd.get('note') || '').toString().trim(),
     submitted_at: new Date().toISOString(),
   };
 
   if (!payload.email || !/^\S+@\S+\.\S+$/.test(payload.email)) {
-    alert('Please enter a valid email.');
+    setFormMessage('Enter a valid email address.');
+    form.querySelector('input[name=email]').focus();
     return;
   }
   if (!payload.platform) {
-    alert('Please pick a platform.');
+    setFormMessage('Pick the platform you care about.');
     return;
   }
 
+  setFormMessage('');
   const submitBtn = form.querySelector('button[type=submit]');
   submitBtn.disabled = true;
   submitBtn.textContent = 'Submitting…';
@@ -61,9 +65,9 @@ form.addEventListener('submit', async (e) => {
     success.scrollIntoView({ behavior: 'smooth', block: 'center' });
   } catch (err) {
     console.error(err);
-    alert('Something went wrong. Please try again.');
+    setFormMessage('Something went wrong. Please try again.');
     submitBtn.disabled = false;
-    submitBtn.textContent = 'Join the waitlist';
+    submitBtn.textContent = 'Get Email Updates';
   }
 });
 

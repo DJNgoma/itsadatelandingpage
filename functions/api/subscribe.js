@@ -1,7 +1,7 @@
 // Cloudflare Pages Function — POST /api/subscribe
-// Receives the waitlist form, creates/updates a Kit subscriber with custom
-// fields, subscribes them to the It's a Date form, and applies platform +
-// interest tags. The Kit API key is stored as the KIT_API_KEY secret on the
+// Receives the mailing-list form, creates/updates a Kit subscriber with custom
+// fields, subscribes them to the It's a Date form, and applies platform tags.
+// The Kit API key is stored as the KIT_API_KEY secret on the
 // Pages project (set with: wrangler pages secret put KIT_API_KEY --project-name itsadate).
 
 const KIT_FORM_ID = 9299281;
@@ -9,8 +9,6 @@ const KIT_FORM_ID = 9299281;
 const TAGS = {
   platform_ios: 18812055,
   platform_android: 18812056,
-  interest_beta: 18812057,
-  interest_launch: 18812058,
 };
 
 function json(data, status = 200) {
@@ -51,7 +49,6 @@ export async function onRequestPost({ request, env }) {
   const email = (payload.email || '').toString().trim();
   const first_name = (payload.first_name || '').toString().trim();
   const platform = (payload.platform || '').toString();
-  const interest = Array.isArray(payload.interest) ? payload.interest.map(String) : [];
   const note = (payload.note || '').toString().trim();
 
   if (!email || !/^\S+@\S+\.\S+$/.test(email)) return json({ error: 'Invalid email' }, 400);
@@ -67,7 +64,6 @@ export async function onRequestPost({ request, env }) {
         state: 'active',
         fields: {
           platform,
-          interest: interest.join(','),
           note,
         },
       }),
@@ -80,11 +76,8 @@ export async function onRequestPost({ request, env }) {
       method: 'POST',
     });
 
-    // 3. Apply platform + interest tags
-    const tagIds = [
-      TAGS[`platform_${platform}`],
-      ...interest.map((i) => TAGS[`interest_${i}`]).filter(Boolean),
-    ];
+    // 3. Apply the selected platform tag
+    const tagIds = [TAGS[`platform_${platform}`]].filter(Boolean);
     await Promise.all(
       tagIds.map((tagId) =>
         kit(env, `/tags/${tagId}/subscribers/${subscriberId}`, { method: 'POST' })

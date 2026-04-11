@@ -1,6 +1,6 @@
 # It's a Date — Landing Page
 
-Static landing page for the **It's a Date** waitlist. Plain HTML/CSS/JS — no build step, no framework. Drop into any static host (Vercel, Netlify, Cloudflare Pages, GitHub Pages, S3, etc).
+Static landing page for **It's a Date**. The primary CTA sends iPhone users to the App Store, and the email form collects Android interest plus occasional product updates. Plain HTML/CSS/JS — no build step, no framework.
 
 ## Files
 
@@ -8,16 +8,24 @@ Static landing page for the **It's a Date** waitlist. Plain HTML/CSS/JS — no b
 .
 ├── index.html   # Entire page
 ├── styles.css   # Design system + layout
-├── script.js    # Form handler (dummy)
+├── script.js    # Form handler + inline validation
 ├── favicon.svg  # Heart-mark favicon
 └── README.md
 ```
 
 ## Local preview
 
+For a quick static preview:
+
 ```sh
 python3 -m http.server 8000
 # open http://localhost:8000
+```
+
+To test the form handler locally as a Cloudflare Pages Function:
+
+```sh
+npx wrangler pages dev .
 ```
 
 ## Deploy
@@ -28,7 +36,7 @@ python3 -m http.server 8000
 
 ## Wiring up the email provider
 
-The form in `script.js` calls a stub `submitToProvider(payload)`. Replace it with a real fetch to Kit (ConvertKit), Mailchimp, Loops, etc.
+The form in `script.js` posts to `/api/subscribe`. If you move away from the included Cloudflare Pages Function, replace `submitToProvider(payload)` with your own fetch target.
 
 ### Field shape sent to the provider
 
@@ -37,7 +45,6 @@ The form in `script.js` calls a stub `submitToProvider(payload)`. Replace it wit
   "first_name": "...",
   "email": "...",
   "platform": "ios" | "android",
-  "interest": ["beta", "launch"],
   "note": "...",
   "submitted_at": "ISO timestamp"
 }
@@ -49,8 +56,6 @@ The form in `script.js` calls a stub `submitToProvider(payload)`. Replace it wit
 |---------------------|--------------------|
 | `platform=ios`      | `platform_ios`     |
 | `platform=android`  | `platform_android` |
-| `interest=beta`     | `interest_beta`    |
-| `interest=launch`   | `interest_launch`  |
 
 ### Kit (ConvertKit) example
 
@@ -63,17 +68,14 @@ await fetch(`https://api.convertkit.com/v3/forms/${FORM_ID}/subscribe`, {
     email: payload.email,
     first_name: payload.first_name,
     fields: { note: payload.note },
-    tags: [
-      payload.platform === 'ios' ? TAG_IOS : TAG_ANDROID,
-      ...payload.interest.map(i => i === 'beta' ? TAG_BETA : TAG_LAUNCH),
-    ],
+    tags: [payload.platform === 'ios' ? TAG_IOS : TAG_ANDROID],
   }),
 });
 ```
 
 ### Mailchimp example
 
-Use the [Mailchimp embedded signup form action URL](https://mailchimp.com/help/host-your-own-signup-forms/) or the API. Map `platform` and `interest` to merge fields or groups, and set tags via the Marketing API `/lists/{list_id}/members/{subscriber_hash}/tags`.
+Use the [Mailchimp embedded signup form action URL](https://mailchimp.com/help/host-your-own-signup-forms/) or the API. Map `platform` and `note` to merge fields or groups, and set tags via the Marketing API `/lists/{list_id}/members/{subscriber_hash}/tags`.
 
 ## Tweaking
 
@@ -87,3 +89,4 @@ Use the [Mailchimp embedded signup form action URL](https://mailchimp.com/help/h
 - Dark mode follows system preference.
 - Honors reduced-motion (no jarring animations).
 - Form is keyboard accessible, semantic HTML, labelled inputs.
+- Use `wrangler pages dev` when you need the local form submission path to work.
