@@ -1,0 +1,115 @@
+name: Pages CI
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/pages.yml"
+      - "*.html"
+      - "*.css"
+      - "*.js"
+      - "functions/**"
+      - "README.md"
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/pages.yml"
+      - "*.html"
+      - "*.css"
+      - "*.js"
+      - "functions/**"
+      - "README.md"
+  workflow_dispatch:
+
+concurrency:
+  group: pages-${{ github.event.pull_request.number || github.ref_name }}
+  cancel-in-progress: true
+
+env:
+  CF_PAGES_PROJECT: itsadate
+
+jobs:
+  validate:
+    name: Validate Site
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Validate client script syntax
+        run: node --check script.js
+
+      - name: Validate Pages function module
+        run: node --input-type=module -e "import fs from 'node:fs'; const src = fs.readFileSync('functions/api/subscribe.js', 'utf8'); await import('data:text/javascript,' + encodeURIComponent(src));"
+
+      - name: Smoke-check static pages
+        run: |
+          python3 -m http.server 4173 >/tmp/itsadate-http.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid"' EXIT
+          sleep 1
+          curl -fsS http://127.0.0.1:4173/ | grep -q "Check the date"
+          curl -fsS http://127.0.0.1:4173/privacy.html | grep -q "Privacy Policy"
+
+  deploy-preview:
+    name: Deploy Preview
+    needs: validate
+    if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && secrets.CLOUDFLARE_API_TOKEN != '' && secrets.CLOUDFLARE_ACCOUNT_ID != ''
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      deployments: write
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Deploy preview to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+          command: >-
+            pages deploy . --project-name=${{ env.CF_PAGES_PROJECT }}
+            --branch=${{ github.head_ref }}
+            --commit-hash=${{ github.event.pull_request.head.sha }}
+
+  deploy-production:
+    name: Deploy Production
+    needs: validate
+    if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && secrets.CLOUDFLARE_API_TOKEN != '' && secrets.CLOUDFLARE_ACCOUNT_ID != ''
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      deployments: write
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Deploy production to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+          command: >-
+            pages deploy . --project-name=${{ env.CF_PAGES_PROJECT }}
+            --branch=main
+            --commit-hash=${{ github.sha }}

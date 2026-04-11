@@ -34,6 +34,24 @@ npx wrangler pages dev .
 - **GitHub Pages**: push to a repo, enable Pages on `main` branch root.
 - **Cloudflare Pages**: connect repo, build command empty, output dir `.`
 
+## GitHub Actions CI/CD
+
+The repo now includes [`.github/workflows/pages.yml`](.github/workflows/pages.yml), which:
+
+- validates the site on every pull request,
+- deploys preview builds for pull requests opened from branches in this repo,
+- deploys production on every push to `main`,
+- supports manual redeploys via `workflow_dispatch`.
+
+Required GitHub repository secrets:
+
+- `CLOUDFLARE_API_TOKEN`
+- `CLOUDFLARE_ACCOUNT_ID`
+
+For this repo, `CLOUDFLARE_ACCOUNT_ID` should be `7373b1bcbe0737cb05257cdc058b6a7c`.
+
+If the Cloudflare Pages Git integration is still enabled, disable automatic production branch deployments in Cloudflare Dashboard > Workers & Pages > `itsadate` > Build > Branch control. Otherwise, GitHub Actions and Cloudflare Git integration will both try to deploy `main`.
+
 ## Wiring up the email provider
 
 The form in `script.js` posts to `/api/subscribe`. If you move away from the included Cloudflare Pages Function, replace `submitToProvider(payload)` with your own fetch target.
