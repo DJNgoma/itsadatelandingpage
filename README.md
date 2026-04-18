@@ -8,7 +8,7 @@ Static landing page for **It's a Date**. The primary CTA sends iPhone users to t
 .
 ├── index.html   # Entire page
 ├── styles.css   # Design system + layout
-├── script.js    # Form handler + inline validation
+├── script.js    # Form handler + latest-release UI
 ├── favicon.svg  # Heart-mark favicon
 └── README.md
 ```
@@ -27,6 +27,11 @@ To test the form handler locally as a Cloudflare Pages Function:
 ```sh
 npx wrangler pages dev .
 ```
+
+The Pages Functions include:
+
+- `/api/subscribe` for mailing-list signups
+- `/api/release` for the latest public App Store version metadata
 
 ## Deploy
 

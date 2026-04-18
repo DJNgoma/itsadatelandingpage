@@ -372,6 +372,85 @@ h1 {
 .split-card h3 { margin: 0 0 8px; font-size: 22px; }
 .split-card p { margin: 0 0 18px; color: var(--muted); }
 
+.release-section {
+  display: grid;
+  gap: 28px;
+}
+.release-intro .lede {
+  max-width: 720px;
+  margin-bottom: 0;
+}
+.release-card {
+  display: grid;
+  grid-template-columns: 260px minmax(0, 1fr);
+  gap: 24px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 28px;
+  box-shadow: var(--shadow);
+}
+@media (max-width: 820px) {
+  .release-card {
+    grid-template-columns: 1fr;
+  }
+}
+.release-meta {
+  display: grid;
+  gap: 12px;
+  align-content: start;
+}
+.release-pill {
+  background: color-mix(in srgb, var(--accent) 8%, var(--bg));
+  border: 1px solid color-mix(in srgb, var(--accent) 18%, var(--line));
+  border-radius: var(--radius-sm);
+  padding: 16px 18px;
+}
+.release-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+.release-pill strong {
+  font-size: 30px;
+  letter-spacing: -0.03em;
+}
+.release-body {
+  min-width: 0;
+}
+.release-kicker {
+  margin: 0 0 12px;
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--accent);
+}
+.release-notes {
+  margin: 0;
+  padding-left: 20px;
+  color: var(--fg);
+}
+.release-notes li + li {
+  margin-top: 8px;
+}
+.release-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px;
+  margin-top: 20px;
+}
+.release-source {
+  margin: 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+
 .faq { display: grid; gap: 10px; max-width: 760px; }
 .faq details {
   background: var(--card);

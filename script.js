@@ -1,6 +1,11 @@
 // Year
 document.getElementById('year').textContent = new Date().getFullYear();
 
+const releaseVersion = document.getElementById('release-version');
+const releaseDate = document.getElementById('release-date');
+const releaseNotes = document.getElementById('release-notes');
+const releaseLink = document.getElementById('release-link');
+
 // Mailing-list form submit.
 // The Cloudflare Pages Function stores subscribers in Kit and tags by platform:
 //   first_name -> merge field FNAME
@@ -15,6 +20,59 @@ const formMessage = document.getElementById('form-message');
 function setFormMessage(message) {
   formMessage.hidden = !message;
   formMessage.textContent = message || '';
+}
+
+function formatReleaseDate(value) {
+  if (!value) return '';
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) return '';
+
+  return new Intl.DateTimeFormat(document.documentElement.lang || 'en-ZA', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  }).format(parsed);
+}
+
+function renderReleaseNotes(items) {
+  if (!Array.isArray(items) || !items.length) return;
+
+  releaseNotes.innerHTML = '';
+  items.forEach((item) => {
+    const li = document.createElement('li');
+    li.textContent = item;
+    releaseNotes.appendChild(li);
+  });
+}
+
+async function loadLatestRelease() {
+  if (!releaseVersion || !releaseDate || !releaseNotes || !releaseLink) return;
+
+  const fallbackDate = releaseDate.dataset.releaseDate;
+  const formattedFallbackDate = formatReleaseDate(fallbackDate);
+  if (formattedFallbackDate) releaseDate.textContent = formattedFallbackDate;
+
+  try {
+    const res = await fetch('/api/release');
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+    const data = await res.json();
+    if (data.version) releaseVersion.textContent = data.version;
+
+    const formattedDate = formatReleaseDate(data.releaseDate);
+    if (formattedDate) {
+      releaseDate.textContent = formattedDate;
+      releaseDate.dateTime = data.releaseDate;
+    }
+
+    if (data.appStoreUrl) {
+      releaseLink.href = data.appStoreUrl;
+    }
+
+    renderReleaseNotes(data.notes);
+  } catch (err) {
+    console.warn('Latest release metadata unavailable, using fallback content.', err);
+  }
 }
 
 // Submits to a Cloudflare Pages Function (functions/api/subscribe.js) which
@@ -79,3 +137,5 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
     if (el) { e.preventDefault(); el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
   });
 });
+
+loadLatestRelease();
