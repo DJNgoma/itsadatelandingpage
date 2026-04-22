@@ -22,7 +22,10 @@ function parseNotes(app) {
   }
 
   if ((app.version || '').startsWith('1.0')) {
-    return ['Initial App Store release.'];
+    return [
+      'Initial App Store release with on-device calendar checks.',
+      'Voice input, nearby alternatives, and one-tap sharing.',
+    ];
   }
 
   return ['Latest App Store update is live.'];
